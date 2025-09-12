@@ -1,11 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Part } from '../types';
 
 interface PartListProps {
   parts: Part[];
+  isSaving: boolean;
+  hasUnsavedChanges: boolean;
+  onRemovePart: (part: Part) => void;
 }
 
-export const PartList: React.FC<PartListProps> = ({ parts }) => {
+export const PartList: React.FC<PartListProps> = ({ parts, isSaving, hasUnsavedChanges, onRemovePart }) => {
+
+  const [inEditMode, setInEditMode] = useState(false);
+
+  useEffect(() => {
+
+    if (parts.length === 0 || isSaving) {
+      setInEditMode(false);
+    }
+
+  }, [parts.length, isSaving]);
+
   if (parts.length === 0) {
     return (
       <div className="card">
@@ -32,11 +46,24 @@ export const PartList: React.FC<PartListProps> = ({ parts }) => {
 
   return (
     <div className="card">
-      <h2>Parts Inventory ({parts.length} items)</h2>
+      <h2 className="inventory-header">
+        Parts Inventory ({parts.length} items)
+        <div className="edit-toggle-container">
+          <span className="edit-label">Delete Mode</span>
+          <div
+            onClick={() => setInEditMode(!inEditMode)}
+            className={`toggle-slider ${inEditMode ? "on" : ""}`}
+          > 
+            <div className="toggle-knob" />
+          </div>
+        </div>
+      </h2>
+
       <div className="parts-list">
         <table className="parts-table">
           <thead>
             <tr>
+              {inEditMode && <th></th>}
               <th>Name</th>
               <th>Quantity</th>
               <th>Price</th>
@@ -46,6 +73,17 @@ export const PartList: React.FC<PartListProps> = ({ parts }) => {
           <tbody>
             {parts.map((part) => (
               <tr key={part.id}>
+                {inEditMode && (
+                  <td>
+                    <button 
+                      className="delete-btn"
+                      onClick={() => onRemovePart(part)}
+                      title="Delete part"
+                    >
+                      ×
+                    </button>
+                  </td>
+                )}
                 <td>{part.name}</td>
                 <td>{part.quantity}</td>
                 <td>{formatPrice(part.price)}</td>
@@ -54,13 +92,9 @@ export const PartList: React.FC<PartListProps> = ({ parts }) => {
             ))}
           </tbody>
         </table>
-        <div style={{ 
-          marginTop: '20px', 
-          padding: '15px', 
-          backgroundColor: '#f8f9fa', 
-          borderRadius: '6px',
-          textAlign: 'right'
-        }}>
+
+        <div className= "inventory-footer">
+          <span className="unsaved-changes-text">{hasUnsavedChanges ? "You have unsaved changes" : ""}</span>
           <strong>Total Inventory Value: {getTotalValue()}</strong>
         </div>
       </div>

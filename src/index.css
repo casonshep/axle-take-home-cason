@@ -203,3 +203,98 @@ body {
   font-size: 14px;
   margin-top: 5px;
 }
+
+/* NEW CSS STYLES BELOW */
+
+.toggle-slider {
+  width: 56px;
+  height: 32px;
+  background-color: #ccc;
+  border-radius: 16px;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.toggle-slider.on {
+  background-color: #4ade80; /* green */
+}
+
+.toggle-knob {
+  width: 24px;
+  height: 24px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+.toggle-slider.on .toggle-knob {
+  transform: translateX(24px);
+}
+
+.inventory-header {
+  display: flex;
+  align-items: center;    /* vertically center the toggle */
+  justify-content: space-between; /* pushes toggle to the right */
+  gap: 16px;              /* space between text and toggle */
+  font-size: 1.25rem;     /* optional styling */
+  font-weight: bold;
+}
+
+.inventory-footer {
+  display: flex;
+  align-items: center;   
+  justify-content: space-between;
+  gap: 16px; 
+  margin-top: 20px; 
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+}
+
+.edit-toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.edit-label {
+  font-size: 0.75rem;
+  color: #7f8c8d;
+  font-weight: normal;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+
+.delete-btn:hover {
+  background-color: #e74c3c;
+  color: white;
+  transform: scale(1.1);
+}
+
+.delete-btn:active {
+  transform: scale(0.95);
+}
+
+.unsaved-changes-text {
+  color: #e74c3c;
+  font-size: 0.875rem;
+  font-weight: normal;
+}

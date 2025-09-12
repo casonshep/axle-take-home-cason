@@ -10,6 +10,7 @@ function App() {
   const [parts, setParts] = useState<Part[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   // Load initial parts data on component mount
   useEffect(() => {
@@ -37,6 +38,7 @@ function App() {
     loadParts();
   }, []);
 
+
   // Generate unique ID for new parts
   const generateId = (): string => {
     return Date.now().toString() + Math.random().toString(36).substr(2, 9);
@@ -50,10 +52,15 @@ function App() {
     };
 
     setParts(prevParts => [...prevParts, partWithId]);
+    setHasUnsavedChanges(true);
     toast.success(`Added "${newPart.name}" to inventory`);
   };
 
-
+  const handleRemovePart = (delPart: Part) => {
+    setParts(parts.filter(part => part.id !== delPart.id));
+    setHasUnsavedChanges(true);
+    toast.success(`Removed "${delPart.name}" from the inventory`)
+  };
 
   // Save parts data to localStorage
   const handleSaveParts = async () => {
@@ -61,6 +68,7 @@ function App() {
       setSaving(true);
       await saveParts(parts);
       toast.success('Save successful!');
+      setHasUnsavedChanges(false);
     } catch (error) {
       toast.error('Failed to save parts data');
       console.error('Error saving parts:', error);
@@ -88,7 +96,12 @@ function App() {
 
       <div className="main-content">
         <PartForm onAddPart={handleAddPart} />
-        <PartList parts={parts} />
+        <PartList
+          parts={parts}
+          isSaving={saving}
+          hasUnsavedChanges={hasUnsavedChanges}
+          onRemovePart={handleRemovePart}
+        />
       </div>
 
       <div className="save-section">

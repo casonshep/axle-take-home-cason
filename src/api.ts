@@ -1,19 +1,37 @@
 import { Part } from './types';
 
 // Mock initial parts data
-const INITIAL_PARTS: Part[] = [
-  {
-    id: '1',
-    name: 'Engine Oil Filter',
-    quantity: 50,
-    price: 12.99
-  },
-  {
-    id: '2',
-    name: 'Brake Pads',
-    quantity: 25,
-    price: 45.50
-  }
+// const INITIAL_PARTS: Part[] = [
+//   {
+//     id: '1',
+//     name: 'Engine Oil Filter',
+//     quantity: 50,
+//     price: 12.99
+//   },
+//   {
+//     id: '2',
+//     name: 'Brake Pads',
+//     quantity: 25,
+//     price: 45.50
+//   }
+// ];
+
+export const INITIAL_PARTS: Part[] = [
+  { id: '1', name: 'Engine Oil Filter', quantity: 50, price: 12.99 },
+  { id: '2', name: 'Brake Pads', quantity: 25, price: 45.50 },
+  { id: '3', name: 'Air Filter', quantity: 40, price: 18.75 },
+  { id: '4', name: 'Spark Plug', quantity: 100, price: 8.99 },
+  { id: '5', name: 'Fuel Pump', quantity: 10, price: 120.00 },
+  { id: '6', name: 'Radiator', quantity: 8, price: 220.00 },
+  { id: '7', name: 'Headlight Bulb', quantity: 60, price: 14.50 },
+  { id: '8', name: 'Brake Fluid', quantity: 30, price: 9.99 },
+  { id: '9', name: 'Timing Belt', quantity: 15, price: 75.00 },
+  { id: '10', name: 'Alternator', quantity: 5, price: 250.00 },
+  { id: '11', name: 'Battery', quantity: 12, price: 180.00 },
+  { id: '12', name: 'Clutch Kit', quantity: 7, price: 350.00 },
+  { id: '13', name: 'Wheel Bearing', quantity: 20, price: 55.00 },
+  { id: '14', name: 'Oil Pan Gasket', quantity: 35, price: 11.50 },
+  { id: '15', name: 'CV Joint', quantity: 18, price: 65.00 },
 ];
 
 /**

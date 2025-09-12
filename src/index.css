@@ -37,6 +37,14 @@ body {
   font-size: 1.1rem;
 }
 
+.form-header {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
 .main-content {
   display: grid;
   grid-template-columns: 1fr 2fr;
@@ -121,15 +129,6 @@ body {
   transform: translateY(-1px);
 }
 
-.btn-danger {
-  background-color: #e74c3c;
-  color: white;
-}
-
-.btn-danger:hover {
-  background-color: #c0392b;
-  transform: translateY(-1px);
-}
 
 .btn:disabled {
   opacity: 0.6;
@@ -168,10 +167,6 @@ body {
   vertical-align: middle;
 }
 
-.actions {
-  display: flex;
-  gap: 10px;
-}
 
 .save-section {
   text-align: center;
@@ -234,13 +229,45 @@ body {
   transform: translateX(24px);
 }
 
-.inventory-header {
+.inventory-info {
   display: flex;
-  align-items: center;    /* vertically center the toggle */
-  justify-content: space-between; /* pushes toggle to the right */
-  gap: 16px;              /* space between text and toggle */
-  font-size: 1.25rem;     /* optional styling */
-  font-weight: bold;
+  align-items: center;   
+  justify-content: space-between;
+  gap: 16px; 
+  margin-bottom: 15px; 
+  font-size: 14px;
+  color: #7f8c8d;
+}
+
+.inventory-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #7f8c8d;
+  font-weight: normal;
+}
+
+.items-per-page-select {
+  background: white;
+  border: 1px solid #e1e8ed;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 14px;
+  color: #2c3e50;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 60px;
+}
+
+.items-per-page-select:hover {
+  border-color: #3498db;
+}
+
+.items-per-page-select:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
 
 .inventory-footer {
@@ -254,17 +281,93 @@ body {
   border-radius: 6px;
 }
 
-.edit-toggle-container {
+.inventory-pagination {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  align-items: center;   
+  justify-content: space-between;
+  gap: 16px; 
+  margin-top: 20px; 
+  padding: 15px;
+  border-radius: 6px;
+  background-color: #f8f9fa;
 }
 
-.edit-label {
-  font-size: 0.75rem;
-  color: #7f8c8d;
-  font-weight: normal;
+.pagination-btn {
+  background: white;
+  border: 1px solid #e1e8ed;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #2c3e50;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
 }
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #f8f9fa;
+  border-color: #3498db;
+  color: #3498db;
+}
+
+.pagination-btn:disabled {
+  background-color: #f8f9fa;
+  color: #7f8c8d;
+  cursor: not-allowed;
+  border-color: #e1e8ed;
+}
+
+.page-info {
+  font-size: 14px;
+  font-weight: 500;
+  color: #2c3e50;
+  text-align: center;
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-number-clickable {
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+}
+
+.page-number-clickable:hover {
+  background-color: #f8f9fa;
+  color: #3498db;
+  text-decoration-color: #3498db;
+}
+
+.page-input-minimal {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #2c3e50;
+  outline: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: #2c3e50;
+  text-align: center;
+  width: 30px;
+  padding: 0 2px 2px 2px;
+  font-family: inherit;
+}
+
+.page-input-minimal:focus {
+  border-bottom-color: #3498db;
+}
+
+.page-input-minimal::placeholder {
+  color: #7f8c8d;
+  opacity: 0.7;
+}
+
+
 
 .delete-btn {
   background: none;
@@ -291,10 +394,4 @@ body {
 
 .delete-btn:active {
   transform: scale(0.95);
-}
-
-.unsaved-changes-text {
-  color: #e74c3c;
-  font-size: 0.875rem;
-  font-weight: normal;
 }

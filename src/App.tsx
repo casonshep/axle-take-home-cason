@@ -99,19 +99,25 @@ function App() {
         <PartList
           parts={parts}
           isSaving={saving}
-          hasUnsavedChanges={hasUnsavedChanges}
           onRemovePart={handleRemovePart}
         />
       </div>
-
+    
       <div className="save-section">
+      
         <button
           onClick={handleSaveParts}
           disabled={saving}
           className="btn btn-success"
           style={{ fontSize: '18px', padding: '15px 30px' }}
         >
-          {saving ? 'Saving...' : 'Save Inventory'}
+          {saving ? 'Saving...' : (hasUnsavedChanges ? (
+            <>
+              Save Inventory
+              <br />
+              (Unsaved Changes)
+            </>
+            ) : 'Save Inventory')}
         </button>
       </div>
 

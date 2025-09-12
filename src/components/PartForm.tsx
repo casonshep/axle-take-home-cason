@@ -58,7 +58,7 @@ export const PartForm: React.FC<PartFormProps> = ({ onAddPart }) => {
 
   return (
     <div className="card">
-      <h2>Add New Part</h2>
+      <h2 className="form-header">Add New Part</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="name">Part Name</label>

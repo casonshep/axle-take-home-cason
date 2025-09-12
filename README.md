@@ -14,35 +14,63 @@ The application features:
 - **Responsive design** with clean, modern styling
 - **localStorage persistence** for data retention
 
-## Your Tasks
+## Bug Fixes
 
-### 1. Fix the Bug
-**Issue:** The save functionality shows "Save successful!" but data doesn't actually persist when you refresh the page.
+### > Local Storage Bug Fix
+**Bug:** The save functionality shows "Save successful!" but data doesn't actually persist when you refresh the page.
 
-**Expected outcome:** Users should be able to save their inventory and have it reload when they refresh the page or return to the application.
+**Expected Functionality:** Users should be able to save their inventory and have it reload when they refresh the page or return to the application.
 
-### 2. Implement the following features:
-**Choose and implement from the following options:**
+**Solution:** Fixed a variable name typo in `api.ts` so the proper parts list was serialized and saved upon `saveParts()` function call. 
 
-- **Deletion functionality**: Add the ability to delete parts from the inventory
-- **Pagination controls**: Add controls for navigating large inventories  
-- **Dynamic sorting**: Implement sorting capabilities by name, quantity, or price
-- **Audit trail**: Add tracking of when parts were added to the inventory
+**Approach:** First I looked in `App.tsx` to find which functions were being called when the save button was clicked. This led me to find the save handler and the `saveParts()` function from the mock api. It was apparent immediately that the steps that included serializing and saving the data to local storage (lines 67-68 in `api.ts`) contained the crux of the issue, and there was the typo. I fixed the typo and also editted this function slightly such that if an error was thrown during this process, `reject()` was called rather than `resolve()`, as this function was meant to return a promise reflecting the status of the request.
 
-### 3. Update README
-Document your implementation:
-- Describe the bug you fixed and your solution approach
-- Detail each new feature you implemented with usage instructions
-- Update the "How to Run" section if needed
-- Add any new dependencies or setup requirements
+## New Features
 
-### 4. Summary
-Write a brief summary including:
-- Overview of the bug fix and your debugging process
-- Description of implemented features and technical decisions
-- Challenges encountered and how you overcame them
-- Next steps you would take to further improve the application
-- Any assumptions made during development
+### 1. Part Deletion with Safe Mode Toggle
+
+**Overview:** Allows users to safely remove parts from their inventory with visual confirmation and unsaved changes tracking. The 'Delete Mode' toggle prevents accidental deletions by requiring explicit activation. Red × buttons appear next to each par tin inventory and only when delete mode is active. When changes are made to the inventory, the save button is updated to indicate there are unsaved changes to the inventory. Toast notifications confirm successful deletions.
+
+**How to Use:**
+1. **Enable Delete Mode**: Toggle the "Delete Mode" switch in the Parts Inventory section
+2. **Select Parts to Delete**: Click the red × button next to any part you want to remove
+3. **Save Changes**: Click "Save Inventory" to make deletions permanent
+   - The button will show "(Unsaved Changes)" until you save
+
+### 2. Pagination System for Large Inventories
+
+**Overview:** Efficiently handles large inventories with customizable page sizes and intuitive navigation. Users are able to choose how many inventory items are displayed on each page from 5, 10, 25, 50 items or view all. User's are also able to manually chose a page they would like to view, making large inventory traversal more robust.
+
+**How to Use:**
+1. **Change Page Size**: Use the dropdown to select how many items to show per page. 
+   - Default is 10
+2. **Navigate Pages**: Use Previous/Next buttons to step through pages
+3. **Quick Page Jump**: Click the current page number, type a new page, press Enter
+
+
+### 3. Dynamic Multi-Column Sorting
+
+**Overview:** Allows inventory organization by part name, quantitiy, or price with visual sort indicators. The sorting for each property is able to switched to ascending, descending, or off. When sortable table properties are clicked, a visual arrow appears to show which property is being sorted and in which direction. After cycling through ascending or descending options, sort is removed and original order is restored.
+
+**How to Use:**
+1. **Sort by Column**: Click any column header from Name, Quantity, or Price
+2. **Change Direction**: Click again to reverse sort order
+3. **Reset Sorting**: Click a third time to return to original order
+
+**Sorting Options:**
+- **Name**: Alphabetical (A-Z / Z-A)
+- **Quantity**: Numerical (Low-High / High-Low)  
+- **Price**: Numerical (Low-High / High-Low)
+
+### 4. Audit Trail with Last Update Tracking
+
+**Overview:** Provides comprehensive tracking of inventory changes with automatic timestamping. Parts now have an optional property: dateUpdated, which may store when the part was updated in the inventory (YYYY-MM-DD). This creates a clear audit trail for inventory management. New parts automatically receive the current date, and the information is preserved through save/load operations. Parts that may have been added to the database without the 'dateUpdated' property will be listed with 'No Data' in that table collumn instead.
+
+**How it Works:**
+1. **Automatic Timestamping**: When adding new parts, the system automatically sets the `dateUpdated` field to the current date (YYYY-MM-DD format)
+2. **Visual Display**: The "Last Update" column in the inventory table shows when each part was last modified
+3. **backward Compatability**: The storage system checks if `dateUpdated` exists for parts during inventory redering operation, displaying 'No Data' if not
+
 
 ## How to Run
 
@@ -80,11 +108,13 @@ The built files will be in the `dist` directory.
 src/
 ├── components/
 │   ├── PartForm.tsx      # Form component for adding new parts
-│   └── PartList.tsx      # Table component for displaying parts
+│   └── PartList.tsx      # Table component for displaying parts with pagination and sorting
+├── hooks/
+│   └── usePagination.ts  # Custom hook for pagination functionality
 ├── App.tsx               # Main application component
 ├── main.tsx              # Application entry point
-├── types.ts              # TypeScript type definitions
-├── api.ts                # Mock API functions (contains the bug)
+├── types.ts              # TypeScript type definitions (includes Part interface with dateUpdated)
+├── api.ts                # Mock API functions with localStorage persistence
 └── index.css             # Application styles
 ```
 
@@ -98,5 +128,3 @@ src/
 - **Data Persistence:** localStorage (mock backend)
 
 ---
-
-**Good luck with the implementation! We're excited to see your approach to debugging, feature development, and code organization.**

@@ -45,10 +45,11 @@ function App() {
   };
 
   // Add new part to the list
-  const handleAddPart = (newPart: Omit<Part, 'id'>) => {
+  const handleAddPart = (newPart: Omit<Part, 'id' | 'dateUpdated'>) => {
     const partWithId: Part = {
       ...newPart,
-      id: generateId()
+      id: generateId(),
+      dateUpdated: new Date().toISOString().split('T')[0],
     };
 
     setParts(prevParts => [...prevParts, partWithId]);

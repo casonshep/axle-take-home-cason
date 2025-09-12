@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo} from 'react';
 import { Part } from '../types';
+import { usePagination } from '../hooks/usePagination';
 
 interface PartListProps {
   parts: Part[];
@@ -10,48 +11,47 @@ interface PartListProps {
 export const PartList: React.FC<PartListProps> = ({ parts, isSaving, onRemovePart }) => {
 
   const [inEditMode, setInEditMode] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [isEditingPage, setIsEditingPage] = useState(false);
-  const [pageInputValue, setPageInputValue] = useState('');
-  
-  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    const newItemsPerPage = value === 'all' ? parts.length : parseInt(value);
-    setItemsPerPage(newItemsPerPage);
-    setCurrentPage(1); // Reset to first page when changing items per page
-  };
 
-  const totalPages = Math.ceil(parts.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedParts = parts.slice(startIndex, startIndex + itemsPerPage);
+  const [sortField, setSortField] = useState<'Name'|'Quantity'|'Price'|'None'>('None');
+  const [sortAscending, setSortAscending] = useState(true);
 
-  const handlePageEdit = () => {
-    setIsEditingPage(true);
-    setPageInputValue(currentPage.toString());
-  };
+  const sortableColumns = [
+    { field: 'Name' as const, label: 'Name' },
+    { field: 'Quantity' as const, label: 'Quantity' },
+    { field: 'Price' as const, label: 'Price' },
+  ];
 
-  const handlePageSubmit = () => {
-    const newPage = parseInt(pageInputValue);
-    if (!isNaN(newPage) && newPage >= 1 && newPage <= totalPages) {
-      setCurrentPage(newPage);
+  const sortedParts = useMemo(() => {
+    if (sortField === 'None') return parts;
+    
+    // copy before sorting
+    const sorted = [...parts];
+    
+    switch (sortField) {
+      case 'Name':
+        return sorted.sort((a, b) => 
+          sortAscending 
+            ? a.name.localeCompare(b.name)
+            : b.name.localeCompare(a.name)
+        );
+      case 'Quantity':
+        return sorted.sort((a, b) => 
+          sortAscending 
+            ? a.quantity - b.quantity
+            : b.quantity - a.quantity
+        );
+      case 'Price':
+        return sorted.sort((a, b) => 
+          sortAscending 
+            ? a.price - b.price
+            : b.price - a.price
+        );
+      default:
+        return sorted;
     }
-    setIsEditingPage(false);
-    setPageInputValue('');
-  };
+  }, [parts, sortField, sortAscending]);
 
-  const handlePageKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handlePageSubmit();
-    } else if (e.key === 'Escape') {
-      setIsEditingPage(false);
-      setPageInputValue('');
-    }
-  };
-
-  const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPageInputValue(e.target.value);
-  };
+  const pagination = usePagination(sortedParts);
 
   useEffect(() => {
 
@@ -60,6 +60,18 @@ export const PartList: React.FC<PartListProps> = ({ parts, isSaving, onRemovePar
     }
 
   }, [parts.length, isSaving]);
+
+  const handleSortChange = (field: 'Name'|'Quantity'|'Price'|'None') => {
+    if (sortField === field) {
+      if (!sortAscending) {
+        setSortField('None'); //reset after cycling through sort options
+      }
+      setSortAscending(!sortAscending);
+    } else {
+      setSortField(field);
+      setSortAscending(true);
+    }
+  };
 
   if (parts.length === 0) {
     return (
@@ -94,9 +106,14 @@ export const PartList: React.FC<PartListProps> = ({ parts, isSaving, onRemovePar
           <div className="inventory-control">
             <span>Show:</span>
             <select 
+              id="itemsPerPage"
               className="items-per-page-select"
-              value={itemsPerPage === parts.length ? 'all' : itemsPerPage.toString()}
-              onChange={handleItemsPerPageChange}
+              value={pagination.itemsPerPage === parts.length ? 'all' : pagination.itemsPerPage.toString()}
+              onChange={(e) => {
+                const value = e.target.value;
+                const newItemsPerPage = value === 'all' ? parts.length : parseInt(value);
+                pagination.setItemsPerPage(newItemsPerPage);
+              }}
             >
               <option value="5">5</option>
               <option value="10">10</option>
@@ -119,17 +136,32 @@ export const PartList: React.FC<PartListProps> = ({ parts, isSaving, onRemovePar
 
       <div className="parts-list">
         <table className="parts-table">
-          <thead>
-            <tr>
-              {inEditMode && <th></th>}
-              <th>Name</th>
-              <th>Quantity</th>
-              <th>Price</th>
-              <th>Total Value</th>
-            </tr>
-          </thead>
+        <thead>
+          <tr>
+            {inEditMode && <th></th>}
+            {sortableColumns.map(({ field, label }) => (
+              <th 
+                key={field}
+                className="sortable"
+                onClick={() => handleSortChange(field)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === 'Enter' && handleSortChange(field)}
+              >
+                {label}
+                {sortField === field && (
+                  <span className="sort-indicator">
+                    {sortAscending ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+            ))}
+            <th>Total Value</th>
+            <th>Last Update</th>
+          </tr>
+        </thead>
           <tbody>
-            {paginatedParts.map((part) => (
+            {pagination.paginatedItems.map((part) => (
               <tr key={part.id}>
                 {inEditMode && (
                   <td>
@@ -146,6 +178,7 @@ export const PartList: React.FC<PartListProps> = ({ parts, isSaving, onRemovePar
                 <td>{part.quantity}</td>
                 <td>{formatPrice(part.price)}</td>
                 <td>{formatPrice(part.quantity * part.price)}</td>
+                <td>{part.dateUpdated || 'No Data'}</td>
               </tr>
             ))}
           </tbody>
@@ -154,43 +187,43 @@ export const PartList: React.FC<PartListProps> = ({ parts, isSaving, onRemovePar
         <div className="inventory-pagination">
           <button 
             className="pagination-btn" 
-            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-            disabled={currentPage === 1}
+            onClick={() => pagination.setCurrentPage(pagination.currentPage - 1)}
+            disabled={pagination.currentPage <= 1}
           >
             Previous
           </button>
           
           <div className="page-info">
-            {isEditingPage ? (
+            {pagination.isEditingPage ? (
               <span>
                 Page{' '}
                 <input
                   type="text"
                   className="page-input-minimal"
-                  value={pageInputValue}
-                  onChange={handlePageInputChange}
-                  onKeyDown={handlePageKeyPress}
-                  onBlur={handlePageSubmit}
+                  value={pagination.pageInputValue}
+                  onChange={pagination.handlePageInputChange}
+                  onKeyDown={pagination.handlePageKeyPress}
+                  onBlur={pagination.handlePageSubmit}
                   autoFocus
-                  placeholder={currentPage.toString()}
+                  placeholder={pagination.currentPage.toString()}
                 />
-                {' '}of {totalPages}
+                {' '}of {pagination.totalPages}
               </span>
             ) : (
               <span>
                 Page{' '}
-                <span className="page-number-clickable" onClick={handlePageEdit}>
-                  {currentPage}
+                <span className="page-number-clickable" onClick={pagination.handlePageEdit}>
+                  {pagination.currentPage}
                 </span>
-                {' '}of {totalPages}
+                {' '}of {pagination.totalPages}
               </span>
             )}
           </div>
           
           <button 
             className="pagination-btn" 
-            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-            disabled={currentPage === totalPages}
+            onClick={() => pagination.setCurrentPage(pagination.currentPage + 1)}
+            disabled={pagination.currentPage >= pagination.totalPages}
           >
             Next
           </button>
